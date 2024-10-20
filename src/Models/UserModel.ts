@@ -12,14 +12,14 @@ export interface IUser {
 interface IUserDocument extends Document, IUser {}
 
 const UserSchema: Schema = new Schema({
-  userId: { type: String, required: true }, 
+  userId: { type: String, required: true, unique: true },
   username: { type: String, required: true },
   displayName: { type: String, required: true },
   profileImage: { type: String, required: false },
   isBlocked: { type: Boolean, default: false },
 });
 
-export const MongooseUserModel: Model<IUserDocument> = mongoose.model<IUserDocument>('User', UserSchema);
+export const MongooseUserModel: Model<IUserDocument> = mongoose.model<IUserDocument>('Users', UserSchema);
 
 export class UserModel {
   private model: Model<IUserDocument>;

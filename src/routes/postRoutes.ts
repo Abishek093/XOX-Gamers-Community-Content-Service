@@ -69,6 +69,7 @@ postRoutes.post("/check-like", protectUser, postController.checkLike.bind(postCo
 postRoutes.get("/fetch-post-details/:postId", protectUser, postController.fetchPostDetails.bind(postController))
 postRoutes.post("/update-post", protectUser, postController.updatePost.bind(postController))
 
-// postRoutes.post("/add-comment", protectUser, postController.addComment.bind(postController))
+postRoutes.get("/fetch-comments/:postId", postController.fetchComments.bind(postController))//
+postRoutes.post("/add-comment", protectUser, postController.addComment.bind(postController))
 
 export default postRoutes;

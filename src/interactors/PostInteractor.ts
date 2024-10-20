@@ -1,3 +1,4 @@
+import { CommentListResponse, CommentResponse } from "../dtos/CommentResponse";
 import { IPostInteractor } from "../interfaces/IPostInteractor";
 import { IPostRepository } from "../interfaces/IPostRepository";
 import { ILike } from "../Models/LikeModel";
@@ -105,4 +106,34 @@ export class PostInteractor implements IPostInteractor {
       }
     }
   }
+
+
+  async addComment(postId: string, userId: string, comment: string): Promise<CommentResponse>{
+    try {
+      const newComment = this.repository.addComment(postId, userId, comment)
+      return newComment  
+    }  catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new CustomError("Internal Server Error", 500);
+      }
+    }
+  }
+
+  async fetchComments(postId: string): Promise<CommentListResponse[]>{
+    try {
+      const comments = this.repository.fetchComment(postId)
+      return comments
+    }  catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new CustomError("Internal Server Error", 500);
+      }
+    }
+  }
+
 }

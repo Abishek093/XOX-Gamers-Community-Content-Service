@@ -119,15 +119,34 @@ export class PostController{
         }
     }
 
-    updatePost = async (req: Request, res: Response) => {
+    updatePost = async (req: Request, res: Response, next: NextFunction) => {
         const { postId, description, croppedImage } = req.body;
         try {
           const updatedPost = await this.postInteractor.updatePost(postId, description, croppedImage);
           console.log('Post updated successfully:', updatedPost);
           res.status(200).json(updatedPost);
         } catch (error) {
-          console.error('Error updating post:', error);
-          res.status(500).json({ message: 'Internal Server Error' });
+            next(error)
         }
-      };
+    };
+
+    addComment = async (req: Request, res: Response, next: NextFunction) => {
+        const { postId, userId, comment } = req.body;
+        try {
+          const newComment = await this.postInteractor.addComment(postId, userId, comment);
+          res.status(200).json(newComment);
+        } catch (error) {
+            next(error)
+        }
+    };
+
+    fetchComments = async (req: Request, res: Response, next: NextFunction) => {
+        const postId = req.params.postId;
+        try {
+            const comments = await this.postInteractor.fetchComments(postId);
+            res.status(200).json(comments); 
+        } catch (error) {
+            next(error)
+        }
+    };
 }

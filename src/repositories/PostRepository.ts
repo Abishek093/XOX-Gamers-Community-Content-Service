@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 import { IPostRepository } from "../interfaces/IPostRepository";
 import PostModel, { IPost } from "../Models/PostModel";
-import { MongooseUserModel, UserModel } from "../Models/UserModel";
+import { IUser, MongooseUserModel, UserModel } from "../Models/UserModel";
 import CustomError from "../utils/CustomError";
 import LikeModel, { ILike } from "../Models/LikeModel";
 import { exit } from "process";
-import CommentModel from "../Models/CommentModel";
+import CommentModel, { IComment } from "../Models/CommentModel";
+import { CommentListResponse, CommentResponse } from "../dtos/CommentResponse";
 
 export class PostRepository implements IPostRepository {
   async createPost(username: string, postImageUrl: String, description: string): Promise<IPost> {
@@ -168,41 +169,107 @@ export class PostRepository implements IPostRepository {
     }
   }
 
-  async addComment(postId: string, userId: string, comment: string): Promise<any> {
+  async addComment(postId: string, userId: string, comment: string): Promise<CommentResponse> {
     try {
-      const post = await PostModel.find({ _id: postId });
+      const post = await PostModel.findOne({ _id: postId });
       if (!post) {
-        throw new Error("Post not found");
+        throw new CustomError("Post not found", 404);
       }
-      const user = await new UserModel().findById(userId);
+  
+      const user = await MongooseUserModel.findOne({ userId: userId });
       if (!user) {
-        throw new Error("User not found");
+        throw new CustomError("User not found", 404);
       }
-
-      const newComment = await new CommentModel({
-        postId: postId,
-        author: userId,
+  
+      const newComment = new CommentModel({
+        postId,
+        author: userId, 
         content: comment,
       });
   
       await newComment.save();
+      console.log('newComment',newComment)
+      if(newComment._id){
+        return {
+          _id: newComment._id.toString(), 
+          postId: newComment.postId.toString(), 
+          author: newComment.author.toString(), 
+          content: newComment.content,
+          createdAt: newComment.createdAt,
+          userDetails: {
+            _id: user.userId.toString(), 
+            username: user.username,
+            displayName: user.displayName,
+            profileImage: user.profileImage || '',
+          },
+        };
+      }else{
+        throw new CustomError("Error adding comment: ", 500);
+      }
 
-      return {
-        _id: newComment._id,
-        postId: newComment.postId,
-        author: newComment.author,
-        content: newComment.content,
-        createdAt: newComment.createdAt,
-        userDetails: {
-          _id: user.userId,
-          username: user.username,
-          displayName: user.displayName,
-          profileImage: user.profileImage,
-        },
-      };
-    }catch (error) {
+    } catch (error) {
       throw new CustomError("Error adding comment: " + (error instanceof Error ? error.message : "Unknown error"), 500);
     }
   }
-
+  
+  async fetchComment(postId: string): Promise<CommentListResponse[]> {
+    try {
+      console.log("Fetching comments for postId: ", postId);
+  
+      const post = await PostModel.findOne({ _id: postId });
+      if (!post) {
+        console.error("Post not found for postId: ", postId);
+        throw new CustomError("Post not found", 404);
+      }
+  
+      console.log("Post found: ", post);
+  
+      const comments = await CommentModel.aggregate([
+        { $match: { postId: new mongoose.Types.ObjectId(postId) } },
+        { $sort: { createdAt: -1 } },
+        {
+          $lookup: {
+            from: "users",
+            let: { authorId: { $toString: "$author" } },
+            pipeline: [
+              { $match: { $expr: { $eq: ["$userId", "$$authorId"] } } }
+            ],
+            as: "userDetails"
+          }
+        },
+        {
+          $unwind: {
+            path: "$userDetails",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            postId: 1,
+            author: 1,
+            content: 1,
+            createdAt: 1,
+            "userDetails._id": 1,
+            "userDetails.profileImage": 1,
+            "userDetails.username": 1,
+            "userDetails.displayName": 1,
+          }
+        }
+      ]);
+  
+      console.log("Comments after Lookup: ", JSON.stringify(comments, null, 2));
+  
+      if (comments.length === 0) {
+        throw new CustomError("No comments found", 404);
+      }
+  
+      return comments;
+    } catch (error) {
+      console.error("Error fetching comments: ", error);
+      throw new CustomError("Error fetching comments: " + (error instanceof Error ? error.message : "Unknown error"), 500);
+    }
+  }
+  
+  
 }
