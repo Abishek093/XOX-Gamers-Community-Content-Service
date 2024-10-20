@@ -14,4 +14,5 @@ export interface IPostRepository {
     addComment(postId: string, userId: string, comment: string): Promise<CommentResponse>
     fetchComment(postId: string): Promise<CommentListResponse[]> 
     updateComment(commentId: string, editContent: string): Promise<IComment | null>
+    deleteComment(commentId: string): Promise<void>
 }

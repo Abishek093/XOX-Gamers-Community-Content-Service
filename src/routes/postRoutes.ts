@@ -71,7 +71,8 @@ postRoutes.post("/update-post", protectUser, postController.updatePost.bind(post
 
 postRoutes.get("/fetch-comments/:postId", postController.fetchComments.bind(postController))
 postRoutes.post("/add-comment", protectUser, postController.addComment.bind(postController))
-postRoutes.put('/update-comment/:commentId', protectUser, postController.updateComment.bind(postController))//
+postRoutes.put('/update-comment/:commentId', protectUser, postController.updateComment.bind(postController))
+postRoutes.delete('/deleteComment/:commentId', protectUser, postController.deleteComment.bind(postController))//
 
 
 

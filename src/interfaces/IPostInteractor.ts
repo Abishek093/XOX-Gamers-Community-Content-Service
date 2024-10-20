@@ -14,4 +14,5 @@ export interface IPostInteractor{
     addComment(postId: string, userId: string, comment: string): Promise<CommentResponse>
     fetchComments(postId: string): Promise<CommentListResponse[]>
     UpdateComment(commentId: string, editContent: string): Promise<IComment | null>
+    deleteComment(commentId: string): Promise<void>
 }

@@ -260,9 +260,9 @@ export class PostRepository implements IPostRepository {
   
       console.log("Comments after Lookup: ", JSON.stringify(comments, null, 2));
   
-      if (comments.length === 0) {
-        throw new CustomError("No comments found", 404);
-      }
+      // if (comments.length === 0) {
+      //   throw new CustomError("No comments found", 404);
+      // }
   
       return comments;
     } catch (error) {
@@ -284,5 +284,17 @@ export class PostRepository implements IPostRepository {
       throw new CustomError("Error updating comment: " + (error instanceof Error ? error.message : "Unknown error"), 500);
     }
   }
+
+  async deleteComment(commentId: string): Promise<void>{
+    try {
+      const result = await CommentModel.findByIdAndDelete(commentId);
+      if (!result) {
+        throw new CustomError("Comment not found", 404);
+      }
+    } catch (error) {
+      throw new CustomError("Error deleting comment: " + (error instanceof Error ? error.message : "Unknown error"), 500);
+    }
+  }
+
 
 }

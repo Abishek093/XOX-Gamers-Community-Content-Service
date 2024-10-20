@@ -161,7 +161,15 @@ export class PostController{
         }
     };
 
+    deleteComment = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          const { commentId } = req.params;
+          await this.postInteractor.deleteComment(commentId); 
+          res.status(200).json("Comment deleted successfully");
+        } catch (error) {
+            next(error)
+        }
+      };
 
 
-    
 }

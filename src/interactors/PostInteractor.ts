@@ -151,4 +151,18 @@ export class PostInteractor implements IPostInteractor {
     }
   }
 
+
+  async deleteComment(commentId: string): Promise<void> {
+    try {
+      await this.repository.deleteComment(commentId)
+    }  catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new CustomError("Internal Server Error", 500);
+      }
+    }
+  }
+
 }
