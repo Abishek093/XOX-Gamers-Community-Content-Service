@@ -1,5 +1,7 @@
+import { CommentListResponse, CommentResponse } from "../dtos/CommentResponse";
 import { IPostInteractor } from "../interfaces/IPostInteractor";
 import { IPostRepository } from "../interfaces/IPostRepository";
+import { IComment } from "../Models/CommentModel";
 import { ILike } from "../Models/LikeModel";
 import { IPost } from "../Models/PostModel";
 import CustomError from "../utils/CustomError";
@@ -105,4 +107,62 @@ export class PostInteractor implements IPostInteractor {
       }
     }
   }
+
+
+  async addComment(postId: string, userId: string, comment: string): Promise<CommentResponse>{
+    try {
+      const newComment = this.repository.addComment(postId, userId, comment)
+      return newComment  
+    }  catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new CustomError("Internal Server Error", 500);
+      }
+    }
+  }
+
+  async fetchComments(postId: string): Promise<CommentListResponse[]>{
+    try {
+      const comments = this.repository.fetchComment(postId)
+      return comments
+    }  catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new CustomError("Internal Server Error", 500);
+      }
+    }
+  }
+
+  async UpdateComment(commentId: string, editContent: string): Promise<IComment | null> {
+    try {
+      const updatedComment = await this.repository.updateComment(commentId, editContent); 
+      return updatedComment;
+    }  catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new CustomError("Internal Server Error", 500);
+      }
+    }
+  }
+
+
+  async deleteComment(commentId: string): Promise<void> {
+    try {
+      await this.repository.deleteComment(commentId)
+    }  catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new CustomError("Internal Server Error", 500);
+      }
+    }
+  }
+
 }
