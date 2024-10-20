@@ -1,6 +1,7 @@
 import { CommentListResponse, CommentResponse } from "../dtos/CommentResponse";
 import { IPostInteractor } from "../interfaces/IPostInteractor";
 import { IPostRepository } from "../interfaces/IPostRepository";
+import { IComment } from "../Models/CommentModel";
 import { ILike } from "../Models/LikeModel";
 import { IPost } from "../Models/PostModel";
 import CustomError from "../utils/CustomError";
@@ -126,6 +127,20 @@ export class PostInteractor implements IPostInteractor {
     try {
       const comments = this.repository.fetchComment(postId)
       return comments
+    }  catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new CustomError("Internal Server Error", 500);
+      }
+    }
+  }
+
+  async UpdateComment(commentId: string, editContent: string): Promise<IComment | null> {
+    try {
+      const updatedComment = await this.repository.updateComment(commentId, editContent); 
+      return updatedComment;
     }  catch (error) {
       if (error instanceof CustomError) {
         throw error;

@@ -149,4 +149,19 @@ export class PostController{
             next(error)
         }
     };
+
+    updateComment = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          const { commentId } = req.params;
+          const content = req.body.content;
+          const updatedComment = await this.postInteractor.UpdateComment(commentId, content); 
+          res.status(200).json(updatedComment); 
+        } catch (error) {
+          next(error)
+        }
+    };
+
+
+
+    
 }

@@ -271,5 +271,18 @@ export class PostRepository implements IPostRepository {
     }
   }
   
+  async updateComment(commentId: string, editContent: string): Promise<IComment | null> {
+    try {
+      const comment = await CommentModel.findByIdAndUpdate(
+        { _id: commentId },
+        { content: editContent },
+        { new: true }
+      );
   
+      return comment;
+    } catch (error) {
+      throw new CustomError("Error updating comment: " + (error instanceof Error ? error.message : "Unknown error"), 500);
+    }
+  }
+
 }

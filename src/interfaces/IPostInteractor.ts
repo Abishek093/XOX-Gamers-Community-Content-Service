@@ -1,4 +1,5 @@
 import { CommentListResponse, CommentResponse } from "../dtos/CommentResponse";
+import { IComment } from "../Models/CommentModel";
 import { ILike } from "../Models/LikeModel";
 import { IPost } from "../Models/PostModel";
 
@@ -12,4 +13,5 @@ export interface IPostInteractor{
     updatePost(postId: string, description: string, croppedImage: string): Promise<void>
     addComment(postId: string, userId: string, comment: string): Promise<CommentResponse>
     fetchComments(postId: string): Promise<CommentListResponse[]>
+    UpdateComment(commentId: string, editContent: string): Promise<IComment | null>
 }
