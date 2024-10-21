@@ -2,6 +2,7 @@ import { CommentListResponse, CommentResponse } from "../dtos/CommentResponse";
 import { IComment } from "../Models/CommentModel";
 import { ILike } from "../Models/LikeModel";
 import { IPost } from "../Models/PostModel";
+import { IReport } from "../Models/ReportModel";
 
 export interface IPostInteractor{
     createPost(username: string, postImageUrl: String, description: string | undefined): Promise<IPost>
@@ -15,4 +16,6 @@ export interface IPostInteractor{
     fetchComments(postId: string): Promise<CommentListResponse[]>
     UpdateComment(commentId: string, editContent: string): Promise<IComment | null>
     deleteComment(commentId: string): Promise<void>
+    reportPost(userId: string, postId: string, reason: string): Promise<IReport>
+    getReportReasons(): Promise<string[]> 
 }

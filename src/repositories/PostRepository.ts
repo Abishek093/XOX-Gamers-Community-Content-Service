@@ -7,6 +7,7 @@ import LikeModel, { ILike } from "../Models/LikeModel";
 import { exit } from "process";
 import CommentModel, { IComment } from "../Models/CommentModel";
 import { CommentListResponse, CommentResponse } from "../dtos/CommentResponse";
+import ReportModel, { IReport } from "../Models/ReportModel";
 
 export class PostRepository implements IPostRepository {
   async createPost(username: string, postImageUrl: String, description: string): Promise<IPost> {
@@ -296,5 +297,29 @@ export class PostRepository implements IPostRepository {
     }
   }
 
+
+  async reportPost(userId: string, postId: string, reason: string): Promise<IReport> {
+    try {
+      const user = MongooseUserModel.findOne({userId: userId})
+      const post = await PostModel.findOne({ _id: postId });
+      if (!user) {
+        throw new CustomError("User not found!", 404);
+      }
+      if (!post) {
+        throw new CustomError("Post not found!", 404);
+      }
+      const newReport = new ReportModel({
+        reporterId: userId,
+        targetId: postId,
+        targetType: "post",
+        reason: reason,
+        status: "pending",
+      });
+      await newReport.save();
+      return newReport;
+    } catch (error) {
+      throw new CustomError("Error reporting post: " + (error instanceof Error ? error.message : "Unknown error"), 500);
+    }
+  }
 
 }

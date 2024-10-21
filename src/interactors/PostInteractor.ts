@@ -4,6 +4,7 @@ import { IPostRepository } from "../interfaces/IPostRepository";
 import { IComment } from "../Models/CommentModel";
 import { ILike } from "../Models/LikeModel";
 import { IPost } from "../Models/PostModel";
+import { IReport } from "../Models/ReportModel";
 import CustomError from "../utils/CustomError";
 
 export class PostInteractor implements IPostInteractor {
@@ -165,4 +166,34 @@ export class PostInteractor implements IPostInteractor {
     }
   }
 
+  async reportPost(userId: string, postId: string, reason: string): Promise<IReport> {
+    try {
+      if (!userId || !postId || !reason) {
+        throw new CustomError('All parameters (userId, postId, reason) are required',400);
+      }
+      const newReport = await this.repository.reportPost(userId, postId, reason);
+      return newReport;
+    }  catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new CustomError("Internal Server Error", 500);
+      }
+    }
+  }
+
+  async getReportReasons(): Promise<string[]> {
+    try {
+      const reasons =['Spam', 'Inappropriate Content', 'Harassment', 'False Information', 'Other'];
+      return reasons 
+    }  catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new CustomError("Internal Server Error", 500);
+      }
+    }
+  }
 }
