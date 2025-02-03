@@ -130,6 +130,17 @@ export class PostController {
         }
     };
 
+    deletePost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+          const { postId } = req.params;
+          console.log(postId);
+          await this.postInteractor.deletePost(postId);
+          res.status(200).json('Post deleted successfully');
+        } catch (error) {
+            next(error)
+        }
+      };
+
     addComment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { postId, userId, comment } = req.body;
         try {

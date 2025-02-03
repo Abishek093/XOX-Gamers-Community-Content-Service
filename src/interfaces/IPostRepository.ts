@@ -17,4 +17,5 @@ export interface IPostRepository {
     updateComment(commentId: string, editContent: string): Promise<IComment | null>
     deleteComment(commentId: string): Promise<void>
     reportPost(userId: string, postId: string, reason: string): Promise<IReport>
+    deletePost(postId: string): Promise<void>
 }

@@ -4,6 +4,7 @@ export interface IPost extends Document {
   title: string;
   content: string;
   author: mongoose.Types.ObjectId;
+  community?: mongoose.Types.ObjectId;
   likeCount?: number;
   createdAt: Date;
   updatedAt: Date;
@@ -13,14 +14,16 @@ class PostEntity {
   title!: string;
   content!: string;
   author!: mongoose.Types.ObjectId;
+  community?: mongoose.Types.ObjectId;
   likeCount?: number;
   createdAt!: Date;
   updatedAt!: Date;
 
-  constructor(title: string, content: string, author: mongoose.Types.ObjectId) {
+  constructor(title: string, content: string, author: mongoose.Types.ObjectId, community?: mongoose.Types.ObjectId) {
     this.title = title;
     this.content = content;
     this.author = author;
+    this.community = community;
   }
 }
 
@@ -28,6 +31,7 @@ export const PostSchema: Schema<IPost> = new Schema({
   title: { type: String, required: false },
   content: { type: String, required: true },
   author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  community: { type: mongoose.Schema.Types.ObjectId, ref: 'Community', required: false },
 }, {
   timestamps: true  
 });

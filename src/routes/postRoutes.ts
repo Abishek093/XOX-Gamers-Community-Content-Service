@@ -52,12 +52,16 @@ import { PostController } from "../controllers/PostController";
 import { PostRepository } from "../repositories/PostRepository";
 import { PostInteractor } from "../interactors/PostInteractor";
 import { protectUser } from '../middlewares/authMiddleware';
+import { ExploreController } from '../controllers/ExploreController';
+import { ExploreInteractor } from '../interactors/ExploreInteractor';
 
 const postRoutes = Router();
 
 const postRepository = new PostRepository();
 const postInteractor = new PostInteractor(postRepository);
 const postController = new PostController(postInteractor);
+const exploreController = new ExploreController()
+
 
 postRoutes.post('/upload-url', protectUser, postController.generatePresignedUrl.bind(postController))
 postRoutes.post('/create-post', protectUser, postController.createPost.bind(postController))
@@ -73,9 +77,15 @@ postRoutes.get("/fetch-comments/:postId", postController.fetchComments.bind(post
 postRoutes.post("/add-comment", protectUser, postController.addComment.bind(postController))
 postRoutes.put('/update-comment/:commentId', protectUser, postController.updateComment.bind(postController))
 postRoutes.delete('/deleteComment/:commentId', protectUser, postController.deleteComment.bind(postController))
+postRoutes.delete("/delete-post/:postId",protectUser, postController.deletePost.bind(postController))
 
 
 postRoutes.post("/report-post", protectUser, postController.reportPost.bind(postController))
 postRoutes.get("/report-reasons", protectUser, postController.reportReasons.bind(postController))
+
+postRoutes.get("/explore", protectUser, exploreController.getExplorePosts.bind(exploreController))
+postRoutes.get("/for-you", protectUser, exploreController.getForYouPosts.bind(exploreController))
+
+
 
 export default postRoutes;

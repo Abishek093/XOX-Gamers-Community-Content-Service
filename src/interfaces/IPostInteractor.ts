@@ -18,4 +18,5 @@ export interface IPostInteractor{
     deleteComment(commentId: string): Promise<void>
     reportPost(userId: string, postId: string, reason: string): Promise<IReport>
     getReportReasons(): Promise<string[]> 
+    deletePost(postId: string):Promise<void>
 }

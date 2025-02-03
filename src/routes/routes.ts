@@ -63,7 +63,7 @@ import newsRoutes from './newsRoutes';
 const router = express.Router();
 
 router.use((req, res, next) => {
-    console.log('Content Service Routes: Handling request:', req.method, req.url);
+    // console.log('Content Service Routes: Handling request:', req.method, req.url);
     next();
 });
 

@@ -3,7 +3,7 @@ import { IUserInteractor } from "../interfaces/IUserInteractor";
 import { IUserRepository } from "../interfaces/IUserRepository";
 import CustomError from "../utils/CustomError";
 
-export class UserInteractor implements IUserInteractor {
+export class UserInteractor implements IUserInteractor { 
   constructor(private repository: IUserRepository) { }
 
   async createUser(userData: User): Promise<void> {

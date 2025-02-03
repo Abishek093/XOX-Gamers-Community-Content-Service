@@ -1,8 +1,10 @@
   import amqp from 'amqplib/callback_api';
+  const rabbitmqUrl = `amqp://${process.env.RABBITMQ_HOST || 'localhost'}`;
+
 
   export const publishToQueue = (queueName: string, message: any): Promise<void> => {
     return new Promise((resolve, reject) => {
-      amqp.connect('amqp://localhost', (connectError, connection) => {
+      amqp.connect(rabbitmqUrl, (connectError, connection) => {
         if (connectError) {
           return reject(connectError)
         }

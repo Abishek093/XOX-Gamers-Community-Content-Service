@@ -59,11 +59,11 @@ export const protectUser = async (req: Request, res: Response, next: NextFunctio
 
   try {
     const tokenWithoutBearer = token.replace("Bearer ", "").trim();
-    console.log("Token without Bearer:", tokenWithoutBearer);
+    // console.log("Token without Bearer:", tokenWithoutBearer);
 
     const secretKey: string = process.env.JWT_SECRET_KEY || "";
     const decoded = jwt.verify(tokenWithoutBearer, secretKey) as JwtPayload & { userId: string };
-    console.log({ decoded });
+    // console.log({ decoded });
 
     if (decoded && typeof decoded === 'object' && 'userId' in decoded) {
       const userId = decoded.userId;

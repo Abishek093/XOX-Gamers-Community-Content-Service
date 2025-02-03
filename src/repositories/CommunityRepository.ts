@@ -92,6 +92,7 @@ export class CommunityRepository implements ICommunityRepository {
                 title: description,
                 content: postImageUrl,
                 author: user.id,
+                community: communityId,
                 createdAt: Date.now(),
                 updatedAt: Date.now(),
             });
@@ -144,7 +145,7 @@ export class CommunityRepository implements ICommunityRepository {
             const existingFollow = await Follower.findOne({
                 followerId: new mongoose.Types.ObjectId(communityId),
                 userId: new mongoose.Types.ObjectId(userId),
-            });
+            });            
 
             if (!existingFollow) {
                 const follow = new Follower({
@@ -153,6 +154,13 @@ export class CommunityRepository implements ICommunityRepository {
                     status: "Accepted",
                 });
                 await follow.save();
+            }   
+
+            const community = await Community.findById(communityId);
+
+            if (community && !community.followers.includes(new mongoose.Types.ObjectId(userId))) {
+                community.followers.push(new mongoose.Types.ObjectId(userId));
+                await community.save(); 
             }
 
             const followerCount = await Follower.countDocuments({ followerId: communityId, status: "Accepted" });
@@ -170,6 +178,16 @@ export class CommunityRepository implements ICommunityRepository {
                 followerId: new mongoose.Types.ObjectId(communityId),
                 userId: new mongoose.Types.ObjectId(userId),
             });
+
+            const community = await Community.findById(communityId);
+
+            if (community && community.followers.includes(new mongoose.Types.ObjectId(userId))) {
+                const index = community.followers.indexOf(new mongoose.Types.ObjectId(userId));
+                if (index > -1) {
+                    community.followers.splice(index, 1);
+                    await community.save();
+                }
+            }
 
             const followerCount = await Follower.countDocuments({ followerId: communityId, status: "Accepted" });
             //   SocketService.getInstance(io).emitUnfollowCommunity(communityId, followerCount);
